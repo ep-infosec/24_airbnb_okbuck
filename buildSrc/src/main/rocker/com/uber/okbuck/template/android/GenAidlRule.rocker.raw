@@ -1,0 +1,17 @@
+@import java.util.Collection
+@args (String aidlFilePath, String importPath, String manifest, Collection aidlDeps)
+@(ruleType)(
+    name = '@name',
+    aidls = '@aidlFilePath',
+    imports = '@importPath',
+@if (valid(manifest)) {
+    manifest = '@manifest',
+}
+@if (valid(aidlDeps)) {
+    deps = [
+    @for (aidlDep : sorted(aidlDeps)) {
+        '@aidlDep',
+    }
+    ],
+}
+)

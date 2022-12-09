@@ -1,0 +1,144 @@
+import java.text.SimpleDateFormat
+
+buildscript {
+    apply from: "../dependencies.gradle"
+    repositories {
+        gradlePluginPortal()
+    }
+    dependencies {
+        classpath deps.build.bintrayPlugin
+        classpath deps.build.errorpronePlugin
+        classpath deps.build.rockerPlugin
+    }
+}
+
+apply plugin: "maven-publish"
+apply plugin: "com.jfrog.bintray"
+apply plugin: "com.fizzed.rocker"
+apply plugin: "net.ltgt.errorprone"
+
+apply from: "../dependencies.gradle"
+
+repositories {
+    jcenter()
+    google()
+}
+
+jar {
+    exclude("**/*.rocker.raw")
+}
+
+tasks.withType(JavaCompile) {
+    sourceCompatibility = "1.8"
+    targetCompatibility = "1.8"
+}
+
+sourceSets.main.java.srcDirs = ["src/main/rocker", "src/main/java"]
+sourceSets.main.rocker.srcDirs = ["src/main/rocker", "src/main/java"]
+
+dependencies {
+    annotationProcessor deps.apt.autoValue
+    annotationProcessor deps.build.nullaway
+
+    errorprone deps.build.erroproneCompiler
+    compileOnly deps.external.inferAnnotations
+    compileOnly deps.apt.autoValueAnnotations
+
+    implementation gradleApi()
+
+    implementation deps.build.androidPlugin
+    implementation deps.build.commonsIo
+    implementation deps.build.commonsLang3
+    implementation deps.build.kotlinPlugin
+    implementation deps.build.kotlinAllOpen
+    implementation deps.build.rockerRuntime
+    implementation deps.build.jna
+    implementation deps.build.jnaPlatform
+
+    testImplementation deps.test.junit
+}
+
+rocker {
+    discardLogicWhitespace true
+    optimize true
+    extendsClass "com.uber.okbuck.template.core.RuleTemplate"
+    extendsModelClass "com.uber.okbuck.template.core.Rule"
+}
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs += [
+            "-Werror",
+            "-XepAllDisabledChecksAsWarnings",
+            "-XepDisableWarningsInGeneratedCode",
+            "-Xep:NullAway:ERROR",
+            "-XepOpt:NullAway:AnnotatedPackages=com.uber",
+            "-XepOpt:NullAway:TreatGeneratedAsUnannotated=true",
+            "-Xep:BooleanParameter:OFF",
+            "-Xep:ReturnMissingNullable:OFF",
+            "-Xep:ConstructorInvokesOverridable:OFF",
+            "-Xep:FieldCanBeFinal:OFF",
+            "-Xep:ConstantField:WARN",
+            "-Xep:MixedArrayDimensions:WARN",
+            "-Xep:MultipleTopLevelClasses:WARN",
+            "-Xep:MultiVariableDeclaration:WARN",
+            "-Xep:PackageLocation:WARN",
+            "-Xep:RemoveUnusedImports:OFF",
+            "-Xep:ThrowsUncheckedException:WARN",
+            "-Xep:UnnecessaryStaticImport:WARN",
+            "-Xep:WildcardImport:WARN",
+    ]
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = "javadoc"
+    from "build/docs/javadoc"
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = "sources"
+}
+
+def publishVersion = "0.48.7"
+group = "com.uber"
+version = publishVersion
+def siteUrl = "https://github.com/uber/okbuck"
+def gitUrl = "https://github.com/uber/okbuck.git"
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+
+            artifact sourcesJar
+            artifact javadocJar
+
+            artifactId "okbuck"
+        }
+    }
+}
+
+bintray {
+    user = project.properties.get("bintray.user")
+    key = project.properties.get("bintray.apikey")
+    publications = ["mavenJava"]
+    dryRun = false
+    publish = true
+    pkg {
+        repo = "gradle-plugins"
+        name = "okbuck"
+        userOrg = "uber"
+        desc = "Gradle plugin that lets developers utilize the Buck build system on a Gradle project"
+        websiteUrl = siteUrl
+        issueTrackerUrl = siteUrl + "/issues"
+        vcsUrl = gitUrl
+        licenses = ["MIT"]
+        labels = ["buck", "okbuck", "uber"]
+        publicDownloadNumbers = true
+        version {
+            name = publishVersion
+            released = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZ").format(new Date())
+            vcsTag = publishVersion
+        }
+    }
+}

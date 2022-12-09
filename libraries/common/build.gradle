@@ -1,0 +1,22 @@
+apply plugin: "com.android.library"
+
+group="com.uber.okbuck.sample.common"
+version="1.0.0"
+
+android {
+    defaultConfig {
+        buildConfigField "String", "COMMON_CONFIG", "\"default\""
+    }
+
+    flavorDimensions "tier"
+
+    productFlavors {
+        free {}
+        paid {}
+    }
+}
+
+dependencies {
+    api deps.androidx.appCompat
+    implementation project(":libraries:parcelable")
+}

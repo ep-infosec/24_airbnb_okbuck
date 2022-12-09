@@ -1,0 +1,17 @@
+apply plugin: "com.android.library"
+apply plugin: "com.jakewharton.butterknife"
+
+dependencies {
+    buckLint project (":libraries:customLintLibrary")
+
+    annotationProcessor deps.apt.butterKnifeCompiler
+
+    implementation deps.androidx.appCompat
+    implementation deps.external.butterKnife
+}
+
+android {
+    lintOptions {
+	    warningsAsErrors true
+    }
+}

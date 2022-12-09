@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ededed"
+    android:orientation="vertical">
+
+    <include
+        layout="@layout/ui_home_top_panel"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        app:layout_scrollFlags="scroll|enterAlways" />
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/mCoordinatorLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/mAppBarLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#00000000"
+            app:expanded="false">
+
+            <include
+                layout="@layout/ui_info_edit_panel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_scrollFlags="scroll" />
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/mRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            tools:listitem="@layout/ui_recycler_view_horizontal_item" />
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</LinearLayout>

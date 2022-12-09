@@ -1,0 +1,34 @@
+@args (RockerBody content)
+@(ruleType)(
+    name = '@name',
+@content @if (valid(extraBuckOpts)) {
+@for (extraBuckOpt : extraBuckOpts) {
+    @extraBuckOpt,
+}
+}
+@if (valid(deps)) {
+    deps = [
+    @for (dep : sorted(deps)) {
+        '@dep',
+    }
+    ],
+}
+@if (valid(labels)) {
+    labels = [
+    @for (label : labels) {
+        '@label',
+    }
+    ],
+}
+@if (fileConfiguredVisibility) {
+    visibility = module_visibility()
+} else {
+    @if (valid(visibility)) {
+    visibility = [
+    @for (v : visibility) {
+        '@v',
+    }
+    ],
+    }
+}
+)

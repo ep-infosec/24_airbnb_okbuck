@@ -1,0 +1,38 @@
+@import java.util.Collection
+@args (
+String mainManifest,
+String minSdk,
+String targetSdk,
+String pkg,
+Integer versionCode,
+String versionName,
+boolean debuggable,
+Collection secondaryManifests
+)
+@(ruleType)(
+    name = '@name',
+    main_manifest = '@mainManifest',
+    min_sdk = '@minSdk',
+    target_sdk = '@targetSdk',
+@if (valid(pkg)) {
+    package = '@pkg',
+}
+@if (valid(versionCode)) {
+    version_code = '@versionCode',
+}
+@if (valid(versionName)) {
+    version_name = '@versionName',
+}
+@if (debuggable) {
+    debuggable = True,
+} else {
+    debuggable = False,
+}
+@if (valid(secondaryManifests)) {
+    secondary_manifests = [
+    @for (secondaryManifest : secondaryManifests) {
+        '@secondaryManifest',
+    }
+    ],
+}
+)

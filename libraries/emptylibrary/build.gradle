@@ -1,0 +1,16 @@
+apply plugin: "com.android.library"
+
+android {
+    lintOptions {
+        disable "HardcodedDebugMode"
+    }
+}
+
+dependencies {
+    api deps.androidx.appCompat
+
+    compileOnly deps.androidx.multidex
+
+    testImplementation deps.test.junit
+    testImplementation deps.test.robolectric
+}

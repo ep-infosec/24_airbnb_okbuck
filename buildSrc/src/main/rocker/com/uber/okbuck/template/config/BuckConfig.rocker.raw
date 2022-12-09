@@ -1,0 +1,49 @@
+@import java.util.Map
+@args (
+String buildToolsVersion,
+String target,
+String groovyHome,
+String kotlinHome,
+String scalaCompiler,
+String scalaLibrary,
+String proguardJar,
+Map mavenRepositories,
+)
+@if (valid(buildToolsVersion) && valid(target)) {
+
+[android]
+    build_tools_version = @buildToolsVersion
+    target = @target
+}
+@if (valid(groovyHome)) {
+
+[groovy]
+    groovy_home = @groovyHome
+}
+@if (valid(kotlinHome)) {
+
+[kotlin]
+    kotlin_home = @kotlinHome
+}
+@if (valid(scalaCompiler) && valid(scalaLibrary)) {
+
+[scala]
+    compiler = //@(scalaCompiler):scala-compiler.jar
+    library = @(scalaLibrary)
+}
+@if (valid(proguardJar)) {
+
+[tools]
+    proguard = @proguardJar
+}
+@if (valid(mavenRepositories)) {
+
+[maven_repositories]
+@for ((key, val) : mavenRepositories) {
+    @key = @val
+}
+
+[download]
+    in_build = true
+    max_number_of_retries = 3
+}
